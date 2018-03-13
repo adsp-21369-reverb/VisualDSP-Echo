@@ -16,46 +16,46 @@ void processBlock(unsigned int *block_ptr)
     static float rightChannel[NUM_SAMPLES/2];
     float leftDry[NUM_SAMPLES/2];
     float rightDry[NUM_SAMPLES/2];
-        
+
     start_t = clock();	// start timer
-   	        
+
     //Clear the Block Ready Semaphore
     blockReady = 0;
-    
+
     //Set the Processing Active Semaphore before starting processing
     isProcessing = 1;
-	
-     
+
+
     Block_Fixed_To_Float((int *) block_ptr, leftChannel, rightChannel);
-    
+
     for(i=0; i<NUM_SAMPLES/2;i++)
     {
     	leftDry[i] = leftChannel[i];
     	rightDry[i] = rightChannel[i];
     }
-    
-    
+
+
     DSP_program(leftChannel, rightChannel);
-    
-    
+
+
     for(i=0; i<NUM_SAMPLES/2;i++)
     {
     	leftChannel[i] = leftChannel[i]*mix + leftDry[i]*(1-mix);
     	rightChannel[i] = rightChannel[i]*mix + rightDry[i]*(1-mix);
     }
-    
+
     Block_Float_To_Fixed((int *) block_ptr, leftChannel, rightChannel);
-    
-	
+
+
 
     //Clear the Processing Active Semaphore after processing is complete
     isProcessing = 0;
-    
+
     clocks = CLOCKS_PER_SEC;
     end_t = clock();	// end timer
     total_t = end_t - start_t;	// compute process cycles
-	timer = ((double) (total_t))/CLOCKS_PER_SEC;	// compute process time
-    
+	  timer = ((double) (total_t))/CLOCKS_PER_SEC;	// compute process time
+
 }
 
 void Block_Fixed_To_Float( int * Fixed_In, float * Float_Out_L, float * Float_Out_R )
